@@ -1,0 +1,37 @@
+C51 COMPILER V9.57.0.0   BTN                                                               05/05/2020 13:42:27 PAGE 1   
+
+
+C51 COMPILER V9.57.0.0, COMPILATION OF MODULE BTN
+OBJECT MODULE PLACED IN .\Objects\btn.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE btn.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\btn.l
+                    -st) TABS(2) OBJECT(.\Objects\btn.obj)
+
+line level    source
+
+   1          #include "AT89X52.H"
+   2          sbit key=0xB2;
+   3          sbit speak=0xA6;
+   4          void main(){
+   5   1        unsigned char dly=1;
+   6   1        while(1){
+   7   2          speak=!speak;
+   8   2          Delay_ms(dly);
+   9   2          if(key=0)dly++;
+*** WARNING C276 IN LINE 9 OF btn.c: constant in condition expression
+  10   2        }
+  11   1      
+  12   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     38    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  1 WARNING(S),  0 ERROR(S)

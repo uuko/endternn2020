@@ -1,0 +1,48 @@
+C51 COMPILER V9.57.0.0   BTN_H_L                                                           04/28/2020 15:28:11 PAGE 1   
+
+
+C51 COMPILER V9.57.0.0, COMPILATION OF MODULE BTN_H_L
+OBJECT MODULE PLACED IN .\Objects\btn_h_l.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE btn_h_l.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\b
+                    -tn_h_l.lst) TABS(2) OBJECT(.\Objects\btn_h_l.obj)
+
+line level    source
+
+   1          #include "AT89X52.H"
+   2          sfr  LED=0x80;
+   3          sbit KEY=0xB2;
+   4          sbit speak=0xA6;
+   5          main(){
+   6   1        LED=0;
+   7   1        while(1)
+   8   1        {
+   9   2          do
+  10   2          {
+  11   3            while(KEY==1);
+  12   3              Delay_ms(20);
+  13   3          }
+  14   2          while(KEY==1);
+  15   2          LED++;
+  16   2          do
+  17   2          {
+  18   3            while(KEY==0);
+  19   3              Delay_ms(20);
+  20   3          }
+  21   2          while(KEY==0);
+  22   2        }
+  23   1      
+  24   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     55    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,46 @@
+C51 COMPILER V9.57.0.0   0427                                                              04/28/2020 15:00:16 PAGE 1   
+
+
+C51 COMPILER V9.57.0.0, COMPILATION OF MODULE 0427
+OBJECT MODULE PLACED IN .\Objects\0427.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE 0427.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\0427
+                    -.lst) TABS(2) OBJECT(.\Objects\0427.obj)
+
+line level    source
+
+   1          #include "AT89X52.H"
+   2          void beep(unsigned char i);
+   3          sbit speak=0xA6;
+   4          void main(){
+   5   1          while(1){
+   6   2            beep(3);
+   7   2            Delay_ms(100000);
+   8   2            beep(1);
+   9   2          }
+  10   1        
+  11   1      }
+  12          void beep(unsigned char i){
+  13   1        unsigned int j;
+  14   1        while(i){
+  15   2          for(j=0;j<400;j++){
+  16   3            speak=!speak;
+  17   3            Delay_ms(1);
+  18   3          }
+  19   2          i--;
+  20   2          Delay_ms(200);
+  21   2        }
+  22   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     80    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

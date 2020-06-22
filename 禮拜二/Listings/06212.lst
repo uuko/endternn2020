@@ -1,0 +1,100 @@
+C51 COMPILER V9.57.0.0   06212                                                             06/21/2020 14:08:03 PAGE 1   
+
+
+C51 COMPILER V9.57.0.0, COMPILATION OF MODULE 06212
+OBJECT MODULE PLACED IN .\Objects\06212.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE 06212.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\062
+                    -12.lst) TABS(2) OBJECT(.\Objects\06212.obj)
+
+line level    source
+
+   1          
+   2          #include "AT89X52.H"   //暫存器及組態定義
+   3          sfr  Data=0x80;//P0資料BUS輸出
+   4          sbit SSLED0=0x90; //P10七段顯示器個位數選擇輸出
+   5          sbit SSLED1=0x91; //P11七段顯示器十位數選擇輸出
+   6          sbit SSLED2=0x92; //P12七段顯示器百位數選擇輸出
+   7          sbit SSLED3=0x93; //P13七段顯示器千位數選擇輸出
+   8          
+   9          code unsigned char Table[] //七段顯示器0~9數碼資料
+  10          ={0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,0x07,0x7f,0x6f};
+  11          
+  12          char hor=23,min=59,sec=52; //設定時、分、秒時間
+  13          void Display(char scan); //七段顯示器顯示時間值
+  14          unsigned char scount=0;
+  15          
+  16          main()
+  17            {
+  18   1          char scan=20;
+  19   1               TMOD = 0x01; 
+  20   1               TL0=65536-10; TH0=(65536-10)>>8; 
+  21   1               EA=1;ET0=1;    
+  22   1               TR0=1; 
+  23   1            while(1){
+  24   2            Display(scan);
+  25   2            }
+  26   1              
+  27   1        }
+  28          /************************************************************/
+  29          void T0_int(void) interrupt 1  //Timer0中斷函數
+  30            {
+  31   1          TL0=65536-46080;
+  32   1        TH0=(65536-46080)>>8;
+  33   1        scount++;
+  34   1        if(scount==20){
+  35   2          scount=0;
+  36   2          sec++;
+  37   2          if(sec>59){
+  38   3            sec=0;min++;
+  39   3            if(min>59){
+  40   4              min=0;hor++;
+  41   4              if(hor>23){
+  42   5                hor=0;sec=0;min=0;
+  43   5              }
+  44   4            }
+  45   3          }
+  46   2        }
+  47   1        }
+  48            
+  49          //***************************************************  
+  50          void Display(char scan) //四位數七段顯示器顯示步數   
+  51          {  
+  52   1        while(scan--) //重覆掃描次數 
+  53   1         {
+  54   2           SSLED0=SSLED1=SSLED2=SSLED3=1; //遮沒
+C51 COMPILER V9.57.0.0   06212                                                             06/21/2020 14:08:03 PAGE 2   
+
+  55   2         Data=~Table[sec%10];//讀取秒個位數數碼資料輸出
+  56   2           SSLED0=0;      //選擇個位數顯示器
+  57   2           Delay_ms(1);   //掃描延時  
+  58   2             
+  59   2         SSLED0=SSLED1=SSLED2=SSLED3=1; //遮沒          
+  60   2           Data=~Table[sec/10];//讀取秒十位數數碼資料輸出
+  61   2           SSLED1=0;      //選擇十位數顯示器
+  62   2           Delay_ms(1);   //掃描延時
+  63   2             
+  64   2         SSLED0=SSLED1=SSLED2=SSLED3=1; //遮沒                     
+  65   2           Data=~Table[min%10];//讀取分個數數碼資料輸出
+  66   2           SSLED2=0;      //選擇百位數顯示器
+  67   2           Delay_ms(1);   //掃描延時
+  68   2             
+  69   2         SSLED0=SSLED1=SSLED2=SSLED3=1; //遮沒
+  70   2           Data=~Table[min/10];//讀取分十位數數碼資料輸出
+  71   2           SSLED3=0;      //選擇千位數顯示器
+  72   2           Delay_ms(1);   //掃描延時
+  73   2         }     
+  74   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    307    ----
+   CONSTANT SIZE    =     10    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      4       1
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

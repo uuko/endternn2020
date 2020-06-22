@@ -1,0 +1,106 @@
+C51 COMPILER V9.57.0.0   CLOCK                                                             05/12/2020 14:50:26 PAGE 1   
+
+
+C51 COMPILER V9.57.0.0, COMPILATION OF MODULE CLOCK
+OBJECT MODULE PLACED IN .\Objects\clock.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE clock.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\clo
+                    -ck.lst) TABS(2) OBJECT(.\Objects\clock.obj)
+
+line level    source
+
+   1          #include "AT89X52.H"   //暫存器及組態定義
+   2          sfr  Data=0x80;//P0資料BUS輸出
+   3          sbit SSLED0=0x90; //P10七段顯示器個位數選擇輸出
+   4          sbit SSLED1=0x91; //P11七段顯示器十位數選擇輸出
+   5          sbit SSLED2=0x92; //P12七段顯示器百位數選擇輸出
+   6          sbit SSLED3=0x93; //P13七段顯示器千位數選擇輸出
+   7          
+   8          char hor=23,min=59,sec=1; //設定時、分、秒時間
+   9          sbit   KEY=P3^2; //按鍵開關由P32輸入
+  10          sbit   SPEAK=P2^6; //P26喇叭輸出
+  11          void beep(unsigned char i); 
+  12          
+  13           unsigned char code Table[] //0~F數碼資料
+  14            ={0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,0x07,
+  15              0x7f,0x6f,0x77,0x7c,0x39,0x5e,0x79,0x71};
+  16           main() 
+  17          {
+  18   1        unsigned char scan;      //掃描次數  
+  19   1        unsigned int Num=2359; //計數十進制初值 
+  20   1        unsigned char i;    //擷取計數的個、十、百、千位數 
+  21   1      
+  22   1         while(1)     //重覆執行
+  23   1          {
+  24   2           for(scan=0;scan<250;scan++) //重覆掃描次數 
+  25   2            {
+  26   3               while(KEY==0)
+  27   3               {
+  28   4                beep(2);
+  29   4               }
+  30   3             SSLED0=SSLED1=SSLED2=SSLED3=1; //遮沒
+  31   3             i=hor % 10;   //取出個位數
+  32   3             Data=~Table[i]; //讀取個位數碼資料輸出
+  33   3             SSLED2=0;        //選擇個位數顯示器
+  34   3             Delay_ms(1);    //掃描延時  
+  35   3             
+  36   3          SSLED0=SSLED1=SSLED2=SSLED3=1; //遮沒           
+  37   3             i=(hor % 100)/10; //取出十位數 
+  38   3             Data=~Table[i];//讀取十位數碼資料輸出
+  39   3             SSLED3=0;       //選擇十位數顯示器
+  40   3             Delay_ms(1);   //掃描延時
+  41   3                                  
+  42   3             SSLED0=SSLED1=SSLED2=SSLED3=1; //遮沒
+  43   3          i=min % 10; //取出百位數
+  44   3             Data=~Table[i]; //讀取百位數碼資料輸出
+  45   3              SSLED0=0;       //選擇百位數顯示器
+  46   3             Delay_ms(1);    //掃描延時
+  47   3             
+  48   3          SSLED0=SSLED1=SSLED2=SSLED3=1; //遮沒
+  49   3             i=(min % 100)/10;  //取出千位數
+  50   3             Data=~Table[i]; //讀取千位數碼資料輸出
+  51   3             SSLED1=0;        //選擇千位數顯示器
+  52   3             Delay_ms(1);    //掃描延時
+  53   3           }    
+  54   2        
+C51 COMPILER V9.57.0.0   CLOCK                                                             05/12/2020 14:50:26 PAGE 2   
+
+  55   2         sec++;                       // 秒加一
+  56   2         if (sec < 60) continue;    // 若秒小於60到loop處   
+  57   2         sec=0; min++;               // 秒等於60則令秒=0，分加一
+  58   2         if (min < 60) continue;    // 若分小於60到loop處   
+  59   2         min=0; hor++;               // 若分等於60則令分=0，時加一
+  60   2         if (hor <24) continue;     // 若時小於24到loop處
+  61   2         hor=0;min=0; sec=0; continue;// 若時等於24則令時、分、秒=0
+  62   2         while(KEY==0)
+  63   2         {
+  64   3          beep(2);
+  65   3         }
+  66   2         } 
+  67   1      }
+  68          void beep(unsigned char i)
+  69          {
+  70   1        unsigned int  j;//SPEAK反相次數
+  71   1        while(i--)   //嗶聲次數
+  72   1         {
+  73   2           for(j=0;j<400;j++) //令輸出反相400次
+  74   2            {
+  75   3              SPEAK=!SPEAK; //SPEAK反相,令喇叭發出聲音
+  76   3              Delay_ms(5);  //嗶聲音頻(100HZ)
+  77   3            }
+  78   2           Delay_ms(200);  //嗶聲的間隔時間
+  79   2        }
+  80   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    294    ----
+   CONSTANT SIZE    =     16    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      3       3
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,183 @@
+C51 COMPILER V9.57.0.0   LCDDD                                                             06/02/2020 17:54:56 PAGE 1   
+
+
+C51 COMPILER V9.57.0.0, COMPILATION OF MODULE LCDDD
+OBJECT MODULE PLACED IN .\Objects\lcddd.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE lcddd.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\lcd
+                    -dd.lst) TABS(2) OBJECT(.\Objects\lcddd.obj)
+
+line level    source
+
+   1          //************* LCD3.c *********************
+   2          //*動作：在LCD顯示24小時電子鐘的變化
+   3          //*******************************************
+   4          #include "..\AT89X52.H"   //暫存器及組態定義
+   5          sfr  Data=0x80;//P0資料BUS輸出
+   6          sbit RS=0x96;  //P16 LCD指令/資料控制,RS=0指令，RS=1資料
+   7                         //LCD讀取/寫入控制,R/W=GND寫入
+   8          sbit EN=0x97;  //P17 LCD致能輸出,EN=0禁能LCD，EN=1致能LCD
+   9          sbit   KEY=P3^2;
+  10          sbit   SPEAK=P2^6;
+  11          char i;
+  12          char hor,min,sec;
+  13          void showClock();
+  14          void showDate();
+  15          char code mes[]="2007\00007\00115\002";//2007年07月15日
+  16          char code Table[]={
+  17           0x10,0x1f,0x02,0x0f,0x0a,0xff,0x02,0x00, //年
+  18           0x0f,0x09,0x0f,0x09,0x0f,0x09,0x13,0x00, //月
+  19           0x0f,0x09,0x09,0x0f,0x09,0x09,0x0f,0x00};//日
+  20          void beep(unsigned char i); 
+  21          bit varSetup=1;
+  22          main()
+  23          {
+  24   1        
+  25   1         char check=0;
+  26   1         hor=23,min=59,sec=58;//設定時、分、秒初值
+  27   1         LCD_init();           //重置及清除LCD   
+  28   1          showDate();
+  29   1         showClock();
+  30   1         EA=1;EX0=1;IT0=1;IT1=1;PX1=1;
+  31   1         while(varSetup==1){
+  32   2            if((hor==0)&&(min==0)&&(sec==0))varSetup=0;
+  33   2         }
+  34   1        /*while((hor!=0)||(min!=0)||(sec!=0)){
+  35   1            if(KEY==0)
+  36   1            {       
+  37   1              sec++;
+  38   1              showClock();
+  39   1              beep(1);
+  40   1              if (sec < 60) continue; //若秒小於60重覆顯示   
+  41   1                sec=0; min++;       //秒等於60則令秒=0，分加一
+  42   1              if (min < 60) continue; //若分小於60重覆顯示   
+  43   1                min=0; hor++;       //若分等於60則令分=0，時加一
+  44   1              if (hor <24)  continue; //若時小於24重覆顯示
+  45   1                hor=0;min=0; sec=0;//若時等於24則令時、分、秒=0
+  46   1            
+  47   1            }
+  48   1         }*/
+  49   1        
+  50   1         while(1)
+  51   1         {
+  52   2          showClock();
+  53   2          
+  54   2          Delay_ms(1000);
+C51 COMPILER V9.57.0.0   LCDDD                                                             06/02/2020 17:54:56 PAGE 2   
+
+  55   2        
+  56   2          sec++;              //秒加一
+  57   2          if (sec < 60) continue; //若秒小於60重覆顯示   
+  58   2          sec=0; min++;       //秒等於60則令秒=0，分加一
+  59   2          if (min < 60) continue; //若分小於60重覆顯示   
+  60   2          min=0; hor++;       //若分等於60則令分=0，時加一
+  61   2          if (hor <24)  continue; //若時小於24重覆顯示
+  62   2          hor=0;min=0; sec=0;//若時等於24則令時、分、秒=0 
+  63   2          
+  64   2          
+  65   2        
+  66   2         }
+  67   1      }
+  68          void showDate(){
+  69   1        /*for(i=0x0;i<=0x3f;i++){
+  70   1          LCD_Cmd(0x40+i);
+  71   1          LCD_Data(Table[i]);
+  72   1        }*/
+  73   1        LCD_Cmd(0x80);
+  74   1        for(i=0;i<11;i++)LCD_Data(mes[i]);
+  75   1      }
+  76          
+  77          void EX0_int(void) interrupt 0{
+  78   1        sec++;
+  79   1        
+  80   1        beep(1);
+  81   1        if (sec > 59){  sec=0; min++; }    //秒等於60則令秒=0，分加一
+  82   1        if (min > 59){    min=0; hor++;}       //若分等於60則令分=0，時加一
+  83   1        if (hor > 23){  hor=0;min=0; sec=0;}//若時等於24則令時、分、秒=0
+  84   1      showClock();
+  85   1      }
+  86          void showClock(){
+  87   1                LCD_Cmd(0xC5);        //由第一行開始顯示 
+  88   1                LCD_Data(hor/10+'0'); //時的十位數到LCD顯示
+  89   1                LCD_Data(hor%10+'0'); //時的個位數到LCD顯示
+  90   1                LCD_Data(':');
+  91   1                
+  92   1                LCD_Data(min/10+'0'); //分的十位數到LCD顯示
+  93   1                LCD_Data(min%10+'0'); //分的個位數到LCD顯示
+  94   1                LCD_Data(':');
+  95   1                
+  96   1                LCD_Data(sec/10+'0'); //秒的十位數到LCD顯示
+  97   1                LCD_Data(sec%10+'0'); //秒的個位數到LCD顯示
+  98   1      }
+  99          void beep(unsigned char i)
+ 100          {
+ 101   1        unsigned int  j;//SPEAK反相次數
+ 102   1        while(i--)   //嗶聲次數
+ 103   1         {
+ 104   2           for(j=0;j<400;j++) //令輸出反相400次
+ 105   2            {
+ 106   3              SPEAK=!SPEAK; //SPEAK反相,令喇叭發出聲音
+ 107   3              Delay_ms(1);  //嗶聲音頻(100HZ)
+ 108   3            }
+ 109   2           
+ 110   2        }
+ 111   1      }
+ 112          /***********************************************************
+ 113          *函數名稱: LCD_Data
+ 114          *功能描述: 傳送資料到文字型LCD
+ 115          *輸入參數：dat
+ 116          ************************************************************/
+C51 COMPILER V9.57.0.0   LCDDD                                                             06/02/2020 17:54:56 PAGE 3   
+
+ 117          void LCD_Data(char dat)  //傳送資料到LCD
+ 118          {
+ 119   1          Data=dat; //資料送到BUS
+ 120   1          RS=1;EN=1;//資料寫入到LCD內
+ 121   1          Delay_ms(1);   //LCD等待寫入完成
+ 122   1          EN=0;          //禁能LCD    
+ 123   1      }
+ 124          /***************************************************************
+ 125          *函數名稱: LCD_Cmd
+ 126          *功能描述: 傳送命令到文字型LCD
+ 127          *輸入參數：Cmd
+ 128          ************************************************************/
+ 129          void LCD_Cmd(unsigned char Cmd) //傳送命令到LCD
+ 130          {
+ 131   1          Data=Cmd;  //命令送到BUS
+ 132   1          RS=0;EN=1; //命令寫入到LCD內
+ 133   1          Delay_ms(1);    //LCD等待寫入完成     
+ 134   1          EN=0;           //禁能LCD
+ 135   1      }
+ 136          /***************************************************************
+ 137          *函數名稱: LCD_init
+ 138          *功能描述: 啟始化文字型LCD
+ 139          *****************************************************************/
+ 140          void LCD_init(void)    //LCD的啟始程式  
+ 141          {
+ 142   1          LCD_Cmd(0x38);/*0011 1000,8bit傳輸,顯示2行,5*7字型
+ 143   1                          bit4:DL=1,8bit傳輸,
+ 144   1                          bit3:N=1,顯示2行
+ 145   1                          bit2:F=0,5*7字型*/    
+ 146   1          LCD_Cmd(0x0c);/*0000 1100,顯示幕ON,不顯示游標,游標不閃爍
+ 147   1                          bit2:D=1,顯示幕ON
+ 148   1                          bit1:C=0,不顯示游標
+ 149   1                        bit0:B=0,游標不閃爍*/
+ 150   1          LCD_Cmd(0x06);/*0000 0110,//顯示完游標右移,游標移位禁能 
+ 151   1                          bit1:I/D=1,顯示完游標右移,
+ 152   1                          bit0:S=0,游標移位禁能*/  
+ 153   1          LCD_Cmd(0x01); //清除顯示幕  
+ 154   1          LCD_Cmd(0x02); //游標回原位  
+ 155   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    457    ----
+   CONSTANT SIZE    =     36    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      4       1
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      1    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,187 @@
+C51 COMPILER V9.57.0.0   0621                                                              06/22/2020 10:00:20 PAGE 1   
+
+
+C51 COMPILER V9.57.0.0, COMPILATION OF MODULE 0621
+OBJECT MODULE PLACED IN .\Objects\0621.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE 0621.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\0621
+                    -.lst) TABS(2) OBJECT(.\Objects\0621.obj)
+
+line level    source
+
+   1          #include "AT89X52.H"
+   2          sfr Data=0x80;
+   3          sbit ssled0=0x90;
+   4          sbit ssled1=0x91;
+   5          sbit ssled2=0x92;
+   6          sbit ssled3=0x93;
+   7          sbit RS=0x96;sbit EN=0x97;
+   8          unsigned char i;
+   9          unsigned char scan;
+  10          char code mes[]="2020\00006\00121\002";
+  11          char code day[]={
+  12           0x10,0x1f,0x02,0x0f,0x0a,0xff,0x02,0x00, 
+  13           0x0f,0x09,0x0f,0x09,0x0f,0x09,0x13,0x00, 
+  14           0x0f,0x09,0x09,0x0f,0x09,0x09,0x0f,0x00};
+  15          unsigned char code Table[]={0x3f,0x06,0x66,0x77};
+  16          unsigned char hor=23,min=59,sec=52;
+  17          unsigned char scount =0;
+  18          void showClock();
+  19          main(){
+  20   1      
+  21   1      
+  22   1        EA=1;IT0=0;EX0=1;EX1=1;IT1=1;
+  23   1        LCD_init();
+  24   1        for(i=0x0;i<=0x3f;i++)  
+  25   1        {
+  26   2           LCD_Cmd(0x40+i);      
+  27   2           LCD_Data(day[i]);   
+  28   2        } 
+  29   1        LCD_Cmd(0x85);
+  30   1        for(i=0;i<11;i++){
+  31   2          LCD_Data(mes[i]);
+  32   2        }
+  33   1        while(1){
+  34   2          
+  35   2          for(scan=0;scan<20;scan++){
+  36   3            ssled0=ssled1=ssled2=ssled3=1;
+  37   3            Data=~Table[0];
+  38   3            ssled0=0;
+  39   3            Delay_ms(1);
+  40   3            
+  41   3            ssled0=ssled1=ssled2=ssled3=1;
+  42   3            Data=~Table[2];
+  43   3            ssled1=0;
+  44   3            Delay_ms(1);
+  45   3            
+  46   3            ssled0=ssled1=ssled2=ssled3=1;
+  47   3            Data=~Table[1];
+  48   3            ssled2=0;
+  49   3            Delay_ms(1);
+  50   3            
+  51   3            ssled0=ssled1=ssled2=ssled3=1;
+  52   3            Data=~Table[3];
+  53   3            ssled3=0;
+  54   3            Delay_ms(1);
+C51 COMPILER V9.57.0.0   0621                                                              06/22/2020 10:00:20 PAGE 2   
+
+  55   3          }
+  56   2          while((sec==0)&&(min==0)&&(hor==0)){
+  57   3              showClock();
+  58   3               TMOD = 0x01; 
+  59   3               TL0=65536-10; TH0=(65536-10)>>8; 
+  60   3               EA=1;ET0=1;    
+  61   3               TR0=1;             
+  62   3          }
+  63   2          showClock();
+  64   2          
+  65   2        }
+  66   1      }
+  67          void EX1_int(void) interrupt 2{
+  68   1          Delay_ms(400);
+  69   1        TR0=!TR0;
+  70   1        if(hor==23){
+  71   2          sec++;
+  72   2          if(sec>59){
+  73   3              sec=0;min++;
+  74   3              if(min>59){
+  75   4                min=0;hor++;
+  76   4                if(hor>23){
+  77   5                  hor=0;sec=0;min=0;
+  78   5                }
+  79   4              }
+  80   3            }
+  81   2        
+  82   2        }
+  83   1        
+  84   1      
+  85   1      }
+  86          void EX0_int (void) interrupt 0 {
+  87   1        for(scan=0;scan<100;scan++){
+  88   2            ssled0=ssled1=ssled2=ssled3=1;
+  89   2            Data=~(Table[0]|0x80);
+  90   2            ssled0=0;
+  91   2            Delay_ms(1);
+  92   2            
+  93   2            ssled0=ssled1=ssled2=ssled3=1;
+  94   2            Data=~(Table[2]|0x80);
+  95   2            ssled1=0;
+  96   2            Delay_ms(1);
+  97   2            
+  98   2            ssled0=ssled1=ssled2=ssled3=1;
+  99   2            Data=~(Table[1]|0x80);
+ 100   2            ssled2=0;
+ 101   2            Delay_ms(1);
+ 102   2            
+ 103   2            ssled0=ssled1=ssled2=ssled3=1;
+ 104   2            Data=~(Table[3]|0x80);
+ 105   2            ssled3=0;
+ 106   2            Delay_ms(1);
+ 107   2          }
+ 108   1      }
+ 109          void showClock(){
+ 110   1        LCD_Cmd(0xC0);
+ 111   1        LCD_Data(hor/10+'0');
+ 112   1        LCD_Data(hor%10+'0');
+ 113   1        LCD_Data(':');
+ 114   1        
+ 115   1        LCD_Data(min/10+'0');
+ 116   1        LCD_Data(min%10+'0');
+C51 COMPILER V9.57.0.0   0621                                                              06/22/2020 10:00:20 PAGE 3   
+
+ 117   1        LCD_Data(':');
+ 118   1        
+ 119   1        LCD_Data(sec/10+'0');
+ 120   1        LCD_Data(sec%10+'0');
+ 121   1      }
+ 122          void T0_int(void) interrupt 1{
+ 123   1        TL0=65536-46080;
+ 124   1        TH0=(65536-46080)>>8;
+ 125   1        scount++;
+ 126   1        if(scount==20){
+ 127   2          scount=0;
+ 128   2          sec++;
+ 129   2          if(sec>59){
+ 130   3            sec=0;min++;
+ 131   3            if(min>59){
+ 132   4              min=0;hor++;
+ 133   4              if(hor>23){
+ 134   5                hor=0;sec=0;min=0;
+ 135   5              }
+ 136   4            }
+ 137   3          }
+ 138   2        }
+ 139   1      }
+ 140            
+ 141          void LCD_Data(char dat){
+ 142   1        Data=dat;
+ 143   1        RS=1;EN=1;
+ 144   1        Delay_ms(1);
+ 145   1        EN=0;
+ 146   1      }
+ 147          void LCD_Cmd(unsigned char Cmd){
+ 148   1        Data=Cmd;
+ 149   1        RS=0;EN=1;
+ 150   1        Delay_ms(1);
+ 151   1        EN=0;
+ 152   1      }
+ 153          void LCD_init(void){
+ 154   1        LCD_Cmd(0x38);
+ 155   1        LCD_Cmd(0x0c);
+ 156   1        LCD_Cmd(0x06);
+ 157   1        LCD_Cmd(0x01);
+ 158   1        LCD_Cmd(0x02);
+ 159   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    645    ----
+   CONSTANT SIZE    =     40    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      6    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

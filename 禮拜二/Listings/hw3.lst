@@ -1,0 +1,69 @@
+C51 COMPILER V9.57.0.0   HW3                                                               05/12/2020 14:08:44 PAGE 1   
+
+
+C51 COMPILER V9.57.0.0, COMPILATION OF MODULE HW3
+OBJECT MODULE PLACED IN .\Objects\hw3.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE hw3.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\hw3.l
+                    -st) TABS(2) OBJECT(.\Objects\hw3.obj)
+
+line level    source
+
+   1          void fun1();
+   2          void fun2();
+   3          
+   4          void main(){
+   5   1      
+   6   1        fun1();
+   7   1        fun2();
+   8   1        
+   9   1        
+  10   1      
+  11   1      }
+  12          void fun2(){
+  13   1        unsigned int i;
+  14   1        unsigned int num=0;
+  15   1        for(i=0;i<100;i++){
+  16   2          if(i%2==1){
+  17   3            if( (i==39)||(i==59)||(i==79)){
+  18   4            
+  19   4            }
+  20   3            else{ 
+  21   4              num+=i;
+  22   4            }
+  23   3          }
+  24   2        }
+  25   1      }
+  26          
+  27          void fun1(){
+  28   1        unsigned int j;
+  29   1        unsigned int TableConv[10]={0};
+  30   1        unsigned int Table[10]={34,65,12,34,67,89,7,6,83,89};
+  31   1        
+  32   1        for(j=0;j<10;j++){
+  33   2          if(Table[j]<20){
+  34   3            Table[j]=0;
+  35   3            TableConv[j]=Table[j];
+  36   3          }
+  37   2          if(20<=Table[j]<40){
+  38   3            TableConv[j]=Table[j];
+  39   3          }
+  40   2          if(40<=Table[j]){
+  41   3            TableConv[j]=Table[j]%40;
+  42   3          }
+  43   2      } }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    248    ----
+   CONSTANT SIZE    =     40    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----      40
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+C51 COMPILER V9.57.0.0   HW3                                                               05/12/2020 14:08:44 PAGE 2   
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

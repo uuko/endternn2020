@@ -1,0 +1,104 @@
+C51 COMPILER V9.57.0.0   0609HOMEWORK7LED                                                  06/09/2020 16:37:37 PAGE 1   
+
+
+C51 COMPILER V9.57.0.0, COMPILATION OF MODULE 0609HOMEWORK7LED
+OBJECT MODULE PLACED IN .\Objects\0609homework7led.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE 0609homework7led.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\L
+                    -istings\0609homework7led.lst) TABS(2) OBJECT(.\Objects\0609homework7led.obj)
+
+line level    source
+
+   1          #include "AT89X52.H"
+   2          sfr Data=0x80;
+   3          sbit SSLED0=0x90;
+   4          sbit SSLED1=0x91;
+   5          sbit SSLED2=0x92;
+   6          sbit SSLED3=0x93;
+   7          sbit KEY=0xB2;
+   8          sbit speak=0xA6;
+   9          unsigned char scount,sec,hour,min;
+  10          unsigned char i;
+  11          unsigned char code Table[]={0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,0x07,0x7f,0x6f,0x77,0x7c,0x39,0x5e,0x79,0x7
+             -1};
+  12          void display(unsigned char scan);
+  13          void main()
+  14          {
+  15   1      sec=01;
+  16   1      min=59;
+  17   1      hour=23;
+  18   1      TMOD=0x10; /*0000 0000 設定Timer0為mode0內部計時
+  19   1      bit3:GATE=0,不使用INT0腳控制
+  20   1      bit2:C/T=0,內部計時
+  21   1      bit1-0:MODE=00，模式0 */
+  22   1      TR1=1; //啟動Timer0
+  23   1      EA=1;
+  24   1      ET1=1;
+  25   1      P0=0;
+  26   1      while(1)
+  27   1      {
+  28   2      }
+  29   1      }
+  30          void Delay(void) interrupt 3 //5000uS延時函數
+  31          {
+  32   1      TL1= (65536-46080) % 256; //11.0592MHZ 1秒
+  33   1      TH1= (65536-46080) / 256; //將高8-bit計數值存入TH0
+  34   1      display(20);
+  35   1      scount++;
+  36   1      if (scount==12){
+  37   2      scount=0;
+  38   2      sec++;
+  39   2      if(sec==60){
+  40   3      sec=0;
+  41   3      min++;
+  42   3      }
+  43   2      if(min==60){
+  44   3      min=0;
+  45   3      hour++;
+  46   3      }
+  47   2      if(hour==24){
+  48   3      hour=0;
+  49   3      }
+  50   2      }
+  51   1      }
+  52          void display(unsigned char scan) //蜂鳴器副程式在P3.2按下時計數器一樣加一
+  53          {
+C51 COMPILER V9.57.0.0   0609HOMEWORK7LED                                                  06/09/2020 16:37:37 PAGE 2   
+
+  54   1      while(scan--)
+  55   1      {
+  56   2      SSLED0=SSLED1=SSLED2=SSLED3=1; //將七段顯示器全數關閉
+  57   2      i=sec % 10; //抽出個位數
+  58   2      Data=~Table[i]; //把個位數對應的七段顯示器陣列給DATA
+  59   2      SSLED0=0; //把第一個七段顯示器(個位數)打開
+  60   2      Delay_ms(1); //延遲1ms
+  61   2      SSLED0=SSLED1=SSLED2=SSLED3=1;
+  62   2      i=(sec% 100)/10; //抽出十位數
+  63   2      Data=~Table[i]; //把十位數對應的七段顯示器陣列給DATA
+  64   2      SSLED1=0; //把第二個七段顯示器(十位數)打開
+  65   2      Delay_ms(1);
+  66   2      SSLED0=SSLED1=SSLED2=SSLED3=1; //將七段顯示器全數關閉
+  67   2      i=min % 10; //抽出個位數
+  68   2      Data=~Table[i]; //把個位數對應的七段顯示器陣列給DATA
+  69   2      SSLED2=0; //把第一個七段顯示器(個位數)打開
+  70   2      Delay_ms(1); //延遲1ms
+  71   2      SSLED0=SSLED1=SSLED2=SSLED3=1;
+  72   2      i=(min% 100)/10; //抽出十位數
+  73   2      Data=~Table[i]; //把十位數對應的七段顯示器陣列給DATA
+  74   2      SSLED3=0; //把第二個七段顯示器(十位數)打開
+  75   2      Delay_ms(1);
+  76   2      }
+  77   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    289    ----
+   CONSTANT SIZE    =     16    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      5    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

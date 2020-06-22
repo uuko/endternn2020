@@ -1,0 +1,46 @@
+C51 COMPILER V9.57.0.0   7LED                                                              04/28/2020 15:53:54 PAGE 1   
+
+
+C51 COMPILER V9.57.0.0, COMPILATION OF MODULE 7LED
+OBJECT MODULE PLACED IN .\Objects\7led.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE 7led.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\7led
+                    -.lst) TABS(2) OBJECT(.\Objects\7led.obj)
+
+line level    source
+
+   1          #include "AT89X52.H"
+   2          sfr datta=0x80;
+   3          unsigned char code Table[]={
+   4          0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,0x07,0x7f,0x6f,0x77,0x7c,0x39,
+   5          0x5e,0x79,0x71
+   6          };
+   7          void main(){
+   8   1        
+   9   1        char i;
+  10   1        P1=0;
+  11   1        while(1){
+  12   2          for(i=0;i<=16;i++){
+  13   3            datta=~Table[i];
+  14   3            Delay_ms(1000);
+  15   3          
+  16   3          }
+  17   2        
+  18   2        }
+  19   1        
+  20   1      
+  21   1      
+  22   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     61    ----
+   CONSTANT SIZE    =     16    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

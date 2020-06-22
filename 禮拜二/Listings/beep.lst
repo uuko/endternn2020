@@ -1,0 +1,72 @@
+C51 COMPILER V9.57.0.0   BEEP                                                              06/22/2020 10:11:39 PAGE 1   
+
+
+C51 COMPILER V9.57.0.0, COMPILATION OF MODULE BEEP
+OBJECT MODULE PLACED IN .\Objects\beep.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE beep.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\beep
+                    -.lst) TABS(2) OBJECT(.\Objects\beep.obj)
+
+line level    source
+
+   1          #include "..\AT89X52.H"
+   2          sfr led=0x80;
+   3          sbit   KEY=P3^2;
+   4          sbit   SPEAK=P2^6;
+   5          char i=1;
+   6          char flag=0xFF;
+   7          void beep(unsigned char i);
+   8          void main(){
+   9   1        
+  10   1        EA=1;
+  11   1        EX0=1;IT0=1;
+  12   1        PX1=1;
+  13   1        EX1=1;IT1=1;
+  14   1        led=0x01;
+  15   1        while(1){
+  16   2          Delay_ms(200);
+  17   2        }
+  18   1      } 
+  19          void EX0_int(void) interrupt 0{
+  20   1          led++;
+  21   1          beep(1);
+  22   1          while(led>=5){
+  23   2            led=0x00;
+  24   2            Delay_ms(500);
+  25   2            led=0xff;
+  26   2            Delay_ms(500);
+  27   2          }
+  28   1      }
+  29          
+  30          void EX1_int(void) interrupt 2{
+  31   1        
+  32   1        led=0x01;
+  33   1      }
+  34          void beep(unsigned char i)
+  35          {
+  36   1        unsigned int  j;//SPEAK反相次數
+  37   1        while(i--)   //嗶聲次數
+  38   1         {
+  39   2           for(j=0;j<400;j++) //令輸出反相400次
+  40   2            {
+  41   3              SPEAK=!SPEAK; //SPEAK反相,令喇叭發出聲音
+  42   3              Delay_ms(1);  //嗶聲音頻(100HZ)
+  43   3            }
+  44   2           
+  45   2        }
+  46   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    179    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      2    ----
+C51 COMPILER V9.57.0.0   BEEP                                                              06/22/2020 10:11:39 PAGE 2   
+
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

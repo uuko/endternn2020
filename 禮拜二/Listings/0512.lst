@@ -1,0 +1,124 @@
+C51 COMPILER V9.57.0.0   0512                                                              05/12/2020 14:19:12 PAGE 1   
+
+
+C51 COMPILER V9.57.0.0, COMPILATION OF MODULE 0512
+OBJECT MODULE PLACED IN .\Objects\0512.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE 0512.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\0512
+                    -.lst) TABS(2) OBJECT(.\Objects\0512.obj)
+
+line level    source
+
+   1          #include "AT89X52.H"
+   2          sfr Data=0x80;
+   3          sbit SSLED0=0x90;
+   4          sbit SSLED1=0x91;
+   5          sbit SSLED2=0x92;
+   6          sbit SSLED3=0x93;
+   7          sbit KEY=0xB2;
+   8          sbit speak=0xA6;
+   9          unsigned int Num =5900;
+  10          unsigned char i;
+  11          unsigned char code Table[]={0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,0x07,0x7f,0x6f,0x77,0x7c,0x39,0x5e,0x79,0x7
+             -1};
+  12          unsigned char p = 0x7f;
+  13          void beep(unsigned char k);
+  14          void main()
+  15          {
+  16   1        unsigned char scan;
+  17   1        while(1)
+  18   1        {
+  19   2          for(scan=0;scan<250;scan++)
+  20   2          {
+  21   3            while(KEY==0) //偵測KEY(P3.2)是否被按下
+  22   3            {
+  23   4              beep(1); //進入蜂鳴器副程式
+  24   4              scan=0; //將SCAN歸零確保秒數後小數點重數
+  25   4            }
+  26   3            SSLED0=SSLED1=SSLED2=SSLED3=1; //將七段顯示器全數關閉
+  27   3            i=Num % 10; //抽出個位數
+  28   3            Data=~Table[i]; //把個位數對應的七段顯示器陣列給DATA
+  29   3            SSLED0=0; //把第一個七段顯示器(個位數)打開
+  30   3            Delay_ms(1); //延遲1ms
+  31   3            SSLED0=SSLED1=SSLED2=SSLED3=1;
+  32   3            i=(Num % 100)/10; //抽出十位數
+  33   3            Data=~Table[i]; //把十位數對應的七段顯示器陣列給DATA
+  34   3            SSLED1=0; //把第二個七段顯示器(十位數)打開
+  35   3            Delay_ms(1);
+  36   3            SSLED0=SSLED1=SSLED2=SSLED3=1;
+  37   3            i=(Num % 1000)/100; //抽出百位數
+  38   3            Data=~Table[i]; //把百位數對應的七段顯示器陣列給DATA
+  39   3            //Data|0x80
+  40   3            Data=Data&p; //讓p亮 第一個位元為0
+  41   3            SSLED2=0; //把第三個七段顯示器(百位數)打開
+  42   3            Delay_ms(1);
+  43   3            SSLED0=SSLED1=SSLED2=SSLED3=1;
+  44   3            i=Num / 1000; //抽出千位數
+  45   3            Data=~Table[i]; //把千位數對應的七段顯示器陣列給DATA
+  46   3            SSLED3=0; //把第四個七段顯示器(千位數)打開
+  47   3            Delay_ms(1);
+  48   3          }
+  49   2            Num++; //計數器數字加一
+  50   2            if ( Num%100==60 )
+  51   2            {
+  52   3              Num=Num+100;
+  53   3              Num=Num-60;
+C51 COMPILER V9.57.0.0   0512                                                              05/12/2020 14:19:12 PAGE 2   
+
+  54   3            }
+  55   2            if (Num>5959) Num=0; //計數器到6000時歸零
+  56   2        }
+  57   1      }
+  58          void beep(unsigned char k) //蜂鳴器副程式在P3.2按下時計數器一樣加一
+  59          {
+  60   1            unsigned int j;
+  61   1          while(k--)
+  62   1          {
+  63   2          
+  64   2            for(j=0;j<250;j++)
+  65   2            {
+  66   3              SSLED0=SSLED1=SSLED2=SSLED3=1;
+  67   3              i=Num % 10;
+  68   3              Data=~Table[i];
+  69   3              SSLED0=0;
+  70   3              Delay_ms(1);
+  71   3              SSLED0=SSLED1=SSLED2=SSLED3=1;
+  72   3              i=(Num % 100)/10;
+  73   3              Data=~Table[i];
+  74   3              SSLED1=0;
+  75   3              Delay_ms(1);
+  76   3              SSLED0=SSLED1=SSLED2=SSLED3=1;
+  77   3              i=(Num % 1000)/100;
+  78   3              Data=~Table[i];
+  79   3              Data=Data&p;
+  80   3              SSLED2=0;
+  81   3              Delay_ms(1);
+  82   3              SSLED0=SSLED1=SSLED2=SSLED3=1;
+  83   3              i=Num / 1000;
+  84   3              Data=~Table[i];
+  85   3              SSLED3=0;
+  86   3              Delay_ms(1);
+  87   3              speak=!speak;
+  88   3          }
+  89   2            if ( Num%100==60 )
+  90   2            {
+  91   3              Num=Num+100;
+  92   3              Num=Num-60;
+  93   3            }
+  94   2            if (Num>5959) Num=0; //計數器到6000時歸零
+  95   2          Num++;
+  96   2        }
+  97   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    386    ----
+   CONSTANT SIZE    =     16    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      4       2
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
